@@ -1,6 +1,7 @@
 # TODO list for pipex project.
 
 1. [ ] - First we need to get the user input correctly. "./pipex file1 cmd1 cmd2 file2"
+1. [X] - Check the number of params.
 1. [ ] - check if file1 and file2 are files
 1. [ ] - Check if the file exist
 1. [ ] - check if the cmd1 or cmd2 exists
