@@ -10,58 +10,59 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "pipex.h"
 #include <unistd.h>
-#include <string.h>
-
-char *join(const char* s1, const char* s2)
-{
-    char* result = malloc(strlen(s1) + strlen(s2) + 1);
-
-    if (result) // thanks @pmg
-    {
-        strcpy(result, s1);
-        strcat(result, s2);
-    }
-
-    return result;
-}
-
-int	check_params(int argc, char const *argv[])
-{
-	if (access(argv[1], F_OK | R_OK | W_OK) == -1)
-	{
-		perror("Error");
-		exit(1);
-	}
-
-	if (argc != 5)
-	{
-		write(2, "Wrong number of arguments.\n", 27);
-		exit(1); // TODO how to check the status
-	}
-	return (0);
-}
 
 int	main(int argc, char const *argv[])
 {
-	/*
-	 * I hecking love C <3
-	 *  */
+	int		fd[2];
+	int pid1;
+	int pid2;
 	char	*const newenv[] = { NULL };
-	char	*const newargv[] = { (char *)argv[2], (char *)argv[1], NULL };
-	char	*const command_path = "/usr/bin/";
-	char	*final_command = (char *)malloc(strlen(command_path) + strlen(argv[2]));
+	char	**newargv;
 
-	final_command = join(command_path, argv[2]);
-
+	newargv = (char **)malloc(sizeof(char*) * 3);
 	check_params(argc, argv);
-	execve(final_command, newargv, newenv);
+	if(pipe(fd) == -1)
+	{
+		perror("Pipex - Error");
+		exit(1);
+	}
+	pid1 = fork();
+	if (pid1 < 0)
+	{
+		perror("Pipex - Error");
+		exit(2);
+	}
+	if (pid1 == 0)
+	{
+		newargv = (char *[3]) { (char *)argv[2], (char *)argv[1], NULL };
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		//                 /usr/bin/cat
+		execve(format_cmd((char *)argv[2]), newargv, newenv);
+	}
+	waitpid(pid1, NULL, 0);
+	if (pid1 != 0)
+	{
+		pid2 = fork();
+	}
+	if(pid2 != 0)
+	{
+		close(fd[0]);
+		close(fd[1]);
+	}
+	if (pid2 == 0)
+	{
+		newargv = (char *[3]) { (char *)argv[3], NULL, NULL };
+		dup2(fd[0], STDIN_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		//                 /usr/bin/wc
+		execve(format_cmd((char *)argv[3]), newargv, newenv);
+	}
+	waitpid(pid2, NULL, 0);
+	free(newargv);
 	return 0;
 }
-
-/*
-** char *const *env[] {'infile=test.txt\0', 'cmd1=cat\0', 'cmd2=wc -l', 'outfile=foo'}
-*/
