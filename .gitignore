@@ -3,3 +3,7 @@
 *.log
 tmp/
 test_dir/
+pipex
+a.out
+foo
+
