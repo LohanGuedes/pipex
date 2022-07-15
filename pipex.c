@@ -6,7 +6,7 @@
 /*   By: lguedes <lguedes@student.42.rio>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 21:13:37 by lguedes           #+#    #+#             */
-/*   Updated: 2022/07/09 22:17:48 by lguedes          ###   ########.fr       */
+/*   Updated: 2022/07/15 20:27:34 by lguedes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,11 @@ int	main(int argc, char *const argv[], char *const env[])
 	}
 	if (pids[0] == 0)
 	{
-		split_cmds = ft_splitcmd(argv[2], ' ');
-		for(int i = 0; split_cmds[i]; i++)
-			ft_printf("splitcmds[%i]: %s\n", i, split_cmds[i]);
-		ft_exec_handler(split_cmds, (char *)argv[1], fd, STDOUT_FILENO);
+		ft_exec_handler(ft_split(argv[2], ' '), (char *)argv[1], fd, STDOUT_FILENO);
 	}
+		
 	waitpid(pids[0], NULL, 0);
+	
 	if (pids[0] != 0)
 		pids[1] = fork();
 	if(pids[1] != 0)

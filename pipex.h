@@ -15,4 +15,6 @@ char	*ft_getpath(char *cmd, char **env);
 
 char	**ft_splitcmd(char *s, char c);
 
+char*	build_path(char *path, char *cmd);
+
 #endif
