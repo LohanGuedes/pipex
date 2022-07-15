@@ -11,58 +11,50 @@
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include "libft/src/libft.h"
 #include <unistd.h>
 
-int	main(int argc, char const *argv[])
-{
-	int		fd[2];
-	int pid1;
-	int pid2;
-	char	*const newenv[] = { NULL };
-	char	**newargv;
 
-	newargv = (char **)malloc(sizeof(char*) * 3);
-	check_params(argc, argv);
+int	main(int argc, char *const argv[], char *const env[])
+{
+	int	fd[2];
+	int	*pids;
+	char	**split_cmds;
+
+	ft_check_params(argc, argv);
+	pids = (int *)malloc(sizeof(int) * 2);
 	if(pipe(fd) == -1)
 	{
 		perror("Pipex - Error");
-		exit(1);
+		exit(32);
 	}
-	pid1 = fork();
-	if (pid1 < 0)
+
+	pids[0] = fork();
+	// Process 1 (for cmd 1)
+	if (pids[0] < 0)
 	{
 		perror("Pipex - Error");
-		exit(2);
+		exit(3);
 	}
-	if (pid1 == 0)
+	if (pids[0] == 0)
 	{
-		newargv = (char *[3]) { (char *)argv[2], (char *)argv[1], NULL };
-		dup2(fd[1], STDOUT_FILENO);
-		close(fd[0]);
-		close(fd[1]);
-		//                 /usr/bin/cat
-		execve(format_cmd((char *)argv[2]), newargv, newenv);
+		split_cmds = ft_splitcmd(argv[2], ' ');
+		for(int i = 0; split_cmds[i]; i++)
+			ft_printf("splitcmds[%i]: %s\n", i, split_cmds[i]);
+		ft_exec_handler(split_cmds, (char *)argv[1], fd, STDOUT_FILENO);
 	}
-	waitpid(pid1, NULL, 0);
-	if (pid1 != 0)
-	{
-		pid2 = fork();
-	}
-	if(pid2 != 0)
+	waitpid(pids[0], NULL, 0);
+	if (pids[0] != 0)
+		pids[1] = fork();
+	if(pids[1] != 0)
 	{
 		close(fd[0]);
 		close(fd[1]);
 	}
-	if (pid2 == 0)
+	if (pids[1] == 0)
 	{
-		newargv = (char *[3]) { (char *)argv[3], NULL, NULL };
-		dup2(fd[0], STDIN_FILENO);
-		close(fd[0]);
-		close(fd[1]);
-		//                 /usr/bin/wc
-		execve(format_cmd((char *)argv[3]), newargv, newenv);
+		ft_exec_handler(ft_splitcmd(argv[3], ' '), NULL, fd, STDIN_FILENO);
 	}
-	waitpid(pid2, NULL, 0);
-	free(newargv);
-	return 0;
+	waitpid(pids[1], NULL, 0);
+	return (0);
 }

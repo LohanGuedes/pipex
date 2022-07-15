@@ -4,7 +4,6 @@
 1. [X] - Check the number of params.
 1. [X] - check if file1 and file2 are files
 1. [X] - Check if the file exist
-1. [X] - check if the cmd1 or cmd2 exists
-1. [ ] - if passed more than 2 files, the program should scream. even though its valid by bash, the pdf only askes you to treat 2 files and n commands.
-1. [ ] - file2 if exists the content is truncated.
-1. [ ] - if the user has no permission to read or write the files, the app should scream and quit.
+1. [X] - Get path function
+1. [ ] - Try to find a way to remove that g_FDNUM
+1. [ ] - Fix the splitcmd function. it does not pair with ""
