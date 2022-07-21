@@ -7,7 +7,7 @@ char*	build_path(char *path, char *cmd)
 	int	final_len;
 	int	path_len;
 	int	cmd_len;
-;
+
 	path_len = ft_strlen(path);
 	cmd_len = (int)ft_strlen(cmd);
 	final_len = (path_len + cmd_len) + 2;

@@ -5,5 +5,10 @@
 1. [X] - check if file1 and file2 are files
 1. [X] - Check if the file exist
 1. [X] - Get path function
-1. [ ] - Try to find a way to remove that g_FDNUM
-1. [ ] - Fix the splitcmd function. it does not pair with ""
+1. [ ] - Fix the splitcmd function. it does not pair with "" or ''
+
+ TODO.md -> STDIN  <- cat (output) -> stdout <- outfile?
+
+1. Leak of memory Hello inside strings.
+1. Process into functions (idnk how to create them)
+1. Dup into files (outfile.)
